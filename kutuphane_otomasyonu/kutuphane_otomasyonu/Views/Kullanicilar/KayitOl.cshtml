@@ -1,0 +1,154 @@
+﻿@model MVC_kutuphane_otomasyonu_entities.Model.Kullanicilar
+@{
+    ViewBag.Title = "KayitOl";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width initial-scale=1.0">
+    <title>Admincast bootstrap 4 &amp; MVC Kutuphane Otomasyonu | Kayit Ol</title>
+    <!-- GLOBAL MAINLY STYLES-->
+    <link href="~/AdminDasboard/admincast-master/html/dist/assets/vendors/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/AdminDasboard/admincast-master/html/dist/assets/vendors/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="~/AdminDasboard/admincast-master/html/dist/assets/vendors/themify-icons/css/themify-icons.css" rel="stylesheet" />
+    <!-- THEME STYLES-->
+    <link href="~/AdminDasboard/admincast-master/html/dist/assets/css/main.css" rel="stylesheet" />
+    <!-- PAGE LEVEL STYLES-->
+    <link href="~/AdminDasboard/admincast-master/html/dist/assets/css/pages/auth-light.css" rel="stylesheet" />
+</head>
+
+<body class="bg-silver-300">
+    <div class="content">
+        <div class="brand">
+            <a class="link" href="/Kitaplar/Index" style="font-size:large">MVC Kutuphane Otomasyonu</a>
+        </div>
+
+        @using (Html.BeginForm("KayitOl", "Kullanicilar", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+
+            <h2 class="login-title">Kullanici Kayit Islemleri</h2>
+            <div class="form-group">
+                @Html.TextBoxFor(x => x.AdiSoyadi, new { @class = "form-control", placeholder = "Adi Soyadi" })
+                @Html.ValidationMessageFor(x => x.AdiSoyadi, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                @Html.TextBoxFor(x => x.Telefon, new { @class = "form-control", placeholder = "Telefon" })
+                @Html.ValidationMessageFor(x => x.Telefon, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                @Html.TextAreaFor(x => x.Adres, new { @class = "form-control", placeholder = "Adres" })
+                @Html.ValidationMessageFor(x => x.Adres, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                @Html.TextBoxFor(x => x.Email, new { @class = "form-control", placeholder = "E-mail" })
+                @Html.ValidationMessageFor(x => x.Email, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                @Html.TextBoxFor(x => x.KullaniciAdi, new { @class = "form-control", placeholder = "Kullanici Adi" })
+                @Html.ValidationMessageFor(x => x.KullaniciAdi, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                @Html.TextBoxFor(x => x.Sifre, new { @class = "form-control", placeholder = "Sifre" })
+                @Html.ValidationMessageFor(x => x.Sifre, "", new { @class = "text-danger" })
+            </div>
+            <div class="form-group">
+                @Html.Password("sifreTekrar", null, new { @class = "form-control", placeholder = "Sifre Tekrar" })
+            </div>
+            <div class="form-group">
+                @if (ViewBag.sifreError != null)
+                {
+                    <label class="text-danger">@ViewBag.sifreError</label>
+                }
+
+            </div>
+
+            <div class="form-group text-left">
+                <label class="ui-checkbox ui-checkbox-info">
+                    @Html.CheckBox("kabul")
+                    <span class="input-span"></span>Sartlari kabul ediyorum.
+                </label>
+            </div>
+
+            <div class="form-group">
+                @if (ViewBag.kabulError != null)
+                {
+                    <label class="text-danger">@ViewBag.kabulError</label>
+                }
+
+            </div>
+
+
+
+            <div class="form-group">
+                <button class="btn btn-info btn-block" type="submit">kayit Ol</button>
+            </div>
+            <div class="social-auth-hr">
+                <span>veya giris yap </span>
+            </div>
+            <div class="text-center social-auth m-b-20">
+                <a class="btn btn-social-icon btn-twitter m-r-5" href="javascript:;"><i class="fa fa-twitter"></i></a>
+                <a class="btn btn-social-icon btn-facebook m-r-5" href="javascript:;"><i class="fa fa-facebook"></i></a>
+                <a class="btn btn-social-icon btn-google m-r-5" href="javascript:;"><i class="fa fa-google-plus"></i></a>
+                <a class="btn btn-social-icon btn-linkedin m-r-5" href="javascript:;"><i class="fa fa-linkedin"></i></a>
+                <a class="btn btn-social-icon btn-vk" href="javascript:;"><i class="fa fa-vk"></i></a>
+            </div>
+            <div class="text-center">
+                Uye misiniz?
+                <a class="color-blue" href="login.html">giris yap</a>
+            </div>
+        }
+    </div>
+    <!-- BEGIN PAGA BACKDROPS-->
+    <div class="sidenav-backdrop backdrop"></div>
+    <div class="preloader-backdrop">
+        <div class="page-preloader">Yukleniyor</div>
+    </div>
+    <!-- END PAGA BACKDROPS-->
+    <!-- CORE PLUGINS -->
+    <script src="~/AdminDasboard/admincast-master/html/dist/assets/vendors/jquery/dist/jquery.min.js" type="text/javascript"></script>
+    <script src="~/AdminDasboard/admincast-master/html/dist/assets/vendors/popper.js/dist/umd/popper.min.js" type="text/javascript"></script>
+    <script src="~/AdminDasboard/admincast-master/html/dist/assets/vendors/bootstrap/dist/js/bootstrap.min.js" type="text/javascript"></script>
+    <!-- PAGE LEVEL PLUGINS -->
+    <script src="~/AdminDasboard/admincast-master/html/dist/assets/vendors/jquery-validation/dist/jquery.validate.min.js" type="text/javascript"></script>
+    <!-- CORE SCRIPTS-->
+    <script src="~/AdminDasboard/admincast-master/html/dist/assets/js/app.js" type="text/javascript"></script>
+    <!-- PAGE LEVEL SCRIPTS-->
+    <script type="text/javascript">
+        $(function () {
+            $('#register-form').validate({
+                errorClass: "help-block",
+                rules: {
+                    KullaniciAdi: {
+                        required: true,
+                        minlength: 2
+                    },
+                    email: {
+                        required: true,
+                        email: true
+                    },
+                    password: {
+                        required: true,
+                        confirmed: true
+                    },
+                    password_confirmation: {
+                        equalTo: password
+                    }
+                },
+                highlight: function (e) {
+                    $(e).closest(".form-group").addClass("has-error")
+                },
+                unhighlight: function (e) {
+                    $(e).closest(".form-group").removeClass("has-error")
+                },
+            });
+        });
+    </script>
+</body>
+</html>

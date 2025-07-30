@@ -1,0 +1,256 @@
+﻿@*@model List<MVC_kutuphane_otomasyonu_entities.Model.Duyurular> /* listeleme olrak css kulannamadigim icin hata verdi bende alttaki kisim gibi yazdim kontrol etb*/*@
+@model MVC_kutuphane_otomasyonu_entities.Model.Duyurular
+@*/*BU KISIMDA YENI BUTONUN CALISMA KISMINADA HATA OLUYOR */*@
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
+@Html.Partial("_PartialDuyuru");
+
+<script src="~/AdminDasboard/admincast-master/html/dist/assets/vendors/jquery/dist/jquery.min.js"></script>
+<script src="~/AdminDasboard/admincast-master/html/dist/assets/vendors/moment/min/moment.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+
+
+<script>
+  function Listele () {
+        $.ajax({
+            type: 'get',
+
+            url: '@Url.Action("DuyuruList")',
+            success: function (data) {
+                $('#tbl tbody').html('');
+
+                $.each(data, function (index, item) {
+
+                    var millisecond = parseInt(item.Tarih.substr(6));
+                    var formattedDate = moment(millisecond).format('DD.MM.YYYY HH:mm:ss');
+
+                    var row = '<tr><td><input type="checkbox" class="recordCheckBox"/></td><th>' +     /*burada kaldim . */
+                        item.Id + '</th><td>' +
+                        item.Baslik + '</td><td>' +
+                        item.Duyuru + '</td><td>' +
+                        item.Aciklama + '</td><td>' +
+                        formattedDate + '</td><td>'
+                        + '<a href="#" class="btnDuzenle btn btn-warning btn-sm" data-id="' + item.Id + '"><i class="fa fa-edit"></i></a> | '
+                        + '<a href="/Duyurular/Detay/' + item.Id + '" class="btn btn-info btn-sm"><i class="fa fa-info"></i></a> | '
+                        + '<a href="#" data-id="' + item.Id + '" class="btnSil btn btn-danger btn-sm"><i class="fa fa-trash"></i></a>'
+                        + '</td></tr>';
+
+                    $('#tbl tbody').append(row);
+
+                });
+
+            },
+            error: function (error) {
+                console.log(error);
+            }
+
+
+        });
+
+    }
+
+</script>
+<script>
+    $(document).ready(function () {
+        Listele();
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $('#data-form').submit(function (e) {
+            e.preventDefault();
+            var formData = $(this).serialize();
+            $.ajax({
+
+                method:'post',
+                url: '@Url.Action("DuyuruEkle")',
+                data: formData,
+                success: function (result) {
+
+                    if (result.success) {
+                        Listele();
+                        $('#dataModal').modal('hide');
+                        alert(result.message);
+                        Temizle();
+                    }
+                    else {
+                        $.each(result.errors, function (key, value) {
+
+                            $('[data-valmsg-for="' + key + '"]').text('');
+                            $('[data-valmsg-for="' + key + '"]').text(value[0]);
+                        });
+
+
+                    }
+                }
+
+
+            });
+        });
+    });
+
+</script>
+<script>
+    $(document).on('click', '.btnDuzenle', function () {
+
+        var Id = $(this).data('id');
+        $('#dataModalLabel').html(Id + 'nolu duyuru guncelleme islemi');
+        $.ajax({
+            url: '/Duyurular/DuyuruGetir',
+            type: 'get',
+            dataType: 'json',
+            data: { Id: Id },
+            success: function (result) {
+                $('#dataModal').modal('show');
+                $('#txtId').val(result.Id);
+                $('#txtBaslik').val(result.Baslik);
+                $('#txtDuyuru').val(result.Duyuru);
+                $('#txtAciklama').val(result.Aciklama);
+
+                var timestamp = parseInt(result.Tarih.replace("/Date(", "").replace(")/", ""));
+                var serverDate = new Date(timestamp);
+                var correctedDate = new Date(serverDate.getTime() - serverDate.getTimezoneOffset() * 60000);
+                var formattedDate = correctedDate.toISOString().slice(0, 16);
+                $('#txtTarih').val(formattedDate);
+
+            },
+            error: function () {
+                alert('bir hata olustu');
+            }
+
+
+
+        })
+
+    });
+
+
+</script>
+<script>
+    function Temizle() {
+        $('#data-form').trigger('reset');
+        $('#dataModalLabel').html('Duyuru Ekleme Sayfasi');
+        $('#txtId').val('0');
+
+    }
+</script>
+<script>
+    function Ekle() {
+        Temizle();
+    }
+</script>
+
+<script>
+    $(document).on('click', '.btnSil', function () {
+        var Id = $(this).data('id');
+        var deleteTR = $(this).closest('tr');
+        $.ajax({
+            type: 'get',
+            url: '/Duyurular/DuyuruGetir/',
+            data: { Id: Id },
+            success: function (result) {
+                var timestamp = parseInt(result.Tarih.replace("/Date(", "").replace(")/", ""));
+                var serverDate = new Date(timestamp);
+                var correctedDate = new Date(serverDate.getTime() - serverDate.getTimezoneOffset() * 60000);
+                var formattedDate = correctedDate.toISOString().slice(0, 16);
+
+                Swal.fire({
+                    title: 'Kayıt Silme!',
+                    html: '<b>Id:</b>' + result.Id + '<br/><b>Başlık:</b>' + result.Baslik +
+                        '<br/><b>Duyuru:</b>' + result.Duyuru + '<br/><b>Açıklama:</b>' + result.Aciklama + '<br/><b>Tarih:</b>' + formattedDate,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Evet!',
+                    cancelButtonText: 'Hayır!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        $.ajax({
+                            type: 'post',
+                            url: '/Duyurular/DuyuruSil/',
+                            data: { Id: Id },
+                            success: function () {
+                                deleteTR.remove();
+                                Swal.fire(
+                                    'Silindi!',
+                                    'Kayıt silme işlemi başarıyla gerçekleşti.',
+                                    'success'
+                                )
+                            }, error: function () {
+
+                                alert('Silme işlemi başarısız oldu.');
+                            }
+                        });
+                    }
+                })
+
+            },
+            error: function () {
+                alert('Bir hata oluştu.');
+            }
+        });
+    });
+</script>
+<script>
+    $(document).on('click', '#tdCheck', function () {
+        if ($(this).prop('checked')) {
+            $('.recordCheckBox').prop('checked', true);
+        } else {
+            $('.recordCheckBox').prop('checked', false);
+        }
+    });
+</script>
+
+<script>
+    $(document).on('click', '#silButton', function () {
+        var selectedIds = [];
+        $('.recordCheckBox:checked').each(function () {
+            selectedIds.push($(this).data('id'));
+        });
+
+        if (selectedIds.length > 0) {
+            Swal.fire({
+                title: 'Kayıt Silme!',
+               /* html: 'Silinecek Kayıt No(lar):<br>' + selectedIds.join(', '),*/
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Evet, sil!',
+                cancelButtonText: 'Vazgeç'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/Duyurular/SeciliDuyuruSil/',
+                        data: { selectedIds: selectedIds },
+                        success: function () {
+                            $('.recordCheckBox:checked').closest('tr').remove();
+
+                            Swal.fire(
+                                'Silindi!',
+                                'Kayıt silme işlemi başarıyla gerçekleşti.',
+                                'success'
+                            );
+                        },
+                        error: function () {
+                            Swal.fire(
+                                'Hata!',
+                                'Silme işlemi başarısız oldu.',
+                                'error'
+                            );
+                        }
+                    });
+                }
+            });
+        }
+    });
+</script>

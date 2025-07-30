@@ -1,0 +1,81 @@
+﻿@using PagedList
+@using PagedList.Mvc
+@model PagedList.IPagedList<MVC_kutuphane_otomasyonu_entities.Model.KitapTurleri>
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+@*//namein parametre ile ayni isimde olmasi gerekiyor.*@
+<form action="Index2">
+    <label style="font-weight:bold">Kitap Turu Ara :</label>
+    @Html.TextBox("ara")
+    <button type="submit">Ara</button>
+</form>
+
+<div class="row">
+
+    <div class="col-lg">
+        <div class="ibox">
+            <div class="ibox ibox-head">
+                Kitap Turleri Listesi
+            </div>
+
+            <div class="ibox-body">
+                <table class=" table table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Kitap Turu</th>
+                            <th>Aciklama</th>
+                            <th>Duzenle</th>
+                            <th>Sil</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <th>@item.Id</th>
+                                <th>@item.KitapTuru</th>
+                                <th>@item.Aciklama</th>
+                                <th><a href="/KitapTurleri/Duzenle/@item.Id" class="btn btn-warning">Duzenle</a></th>
+                                <th><a href="/KitapTurleri/Sil/@item.Id" class="btn btn-danger">Sil</a></th>
+
+                            </tr>
+
+                        }
+                    </tbody>
+
+                </table>
+                @Html.PagedListPager(Model,page =>Url.Action("Index","KitapTurleri",new { page, ara = Request.QueryString["ara"] }),new PagedListRenderOptions
+           {
+               FunctionToTransformEachPageLink = (li, a) =>
+               {
+                   a.AddCssClass("page-link");
+                   li.InnerHtml = a.ToString();
+                   return li;
+               }
+           })
+
+
+
+
+
+                <a href="/KitapTurleri/Ekle" class="btn btn-success">Yeni</a>
+
+            </div>
+
+
+
+
+
+
+        </div>
+    </div>
+
+
+</div>
+
+
+
+
